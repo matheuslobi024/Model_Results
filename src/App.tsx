@@ -12,8 +12,6 @@ import { useFinancialStore } from './store/financialStore';
 export default function App() {
   const isDevMode = import.meta.env.DEV;
 
-  // In dev mode (npm run dev), authenticated by default & opens directly on Screen 3 (Dashboard)
-  // In user / prod mode (npm start / npm run build & preview), requires login & opens on Screen 1 (Landing Page)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(isDevMode);
   const [activeScreen, setActiveScreen] = useState<number>(isDevMode ? 3 : 1);
 
@@ -25,9 +23,8 @@ export default function App() {
   };
 
   const handleSelectScreen = (screenNumber: number) => {
-    // In user mode (non-dev & not authenticated), block access to modules 3, 4, 5, 6
     if (!isAuthenticated && !isDevMode && screenNumber >= 3) {
-      setActiveScreen(2); // Redirect to Login screen
+      setActiveScreen(2);
       return;
     }
     setActiveScreen(screenNumber);
@@ -35,10 +32,11 @@ export default function App() {
 
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
-    setActiveScreen(3); // Navigate to Dashboard on successful login
+    setActiveScreen(3);
   };
 
   const isDark = themeMode === 'dark';
+  const showSidebar = activeScreen !== 1 && activeScreen !== 2;
 
   return (
     <div className={`min-h-screen flex flex-col font-sans ${isDark ? 'bg-[#182129] text-white' : 'bg-slate-50 text-slate-900'}`}>
@@ -49,11 +47,13 @@ export default function App() {
       />
 
       <div className="flex flex-1">
-        <Sidebar
-          activeScreen={activeScreen}
-          onSelectScreen={handleSelectScreen}
-          isAuthenticated={isAuthenticated || isDevMode}
-        />
+        {showSidebar && (
+          <Sidebar
+            activeScreen={activeScreen}
+            onSelectScreen={handleSelectScreen}
+            isAuthenticated={isAuthenticated || isDevMode}
+          />
+        )}
 
         <main className={`flex-1 overflow-y-auto ${isDark ? 'bg-[#182129] text-white' : 'bg-slate-50 text-slate-900'}`}>
           {activeScreen === 1 && (

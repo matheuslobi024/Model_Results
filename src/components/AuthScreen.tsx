@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Lock, Mail, ArrowRight, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Lock, Mail, ArrowRight, ShieldAlert } from 'lucide-react';
 import { useFinancialStore } from '../store/financialStore';
 
 interface AuthScreenProps {
@@ -9,8 +9,8 @@ interface AuthScreenProps {
 export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
   const { themeMode } = useFinancialStore();
   const isDark = themeMode === 'dark';
-  const [email, setEmail] = useState('admin@gmail.com');
-  const [password, setPassword] = useState('123456789');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -19,7 +19,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
       setError(null);
       onLoginSuccess();
     } else {
-      setError('Credenciais inválidas! Use o e-mail admin@gmail.com e a senha 123456789.');
+      setError('Credenciais inválidas! Digite o e-mail e a senha corretos.');
     }
   };
 
@@ -36,18 +36,6 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
           <p className={`text-xs mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Digite suas credenciais para acessar a plataforma.</p>
         </div>
 
-        {/* Demo credentials hint box */}
-        <div className={`p-3 rounded-lg border text-xs mb-5 flex items-start gap-2.5 ${
-          isDark ? 'bg-[#182129] border-[#2D3945] text-slate-300' : 'bg-slate-50 border-slate-200 text-slate-700'
-        }`}>
-          <CheckCircle2 className={`w-4 h-4 mt-0.5 flex-shrink-0 ${isDark ? 'text-[#C87A54]' : 'text-[#002D4A]'}`} />
-          <div>
-            <p className="font-bold mb-0.5">Credenciais de Acesso:</p>
-            <p>E-mail: <span className="font-mono font-bold">admin@gmail.com</span></p>
-            <p>Senha: <span className="font-mono font-bold">123456789</span></p>
-          </div>
-        </div>
-
         {error && (
           <div className="p-3 mb-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-500 text-xs flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 flex-shrink-0" />
@@ -62,6 +50,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
               <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="email"
+                placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className={`w-full pl-9 pr-3 py-2 border rounded-lg text-xs outline-none ${
@@ -78,6 +67,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onLoginSuccess }) => {
               <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
               <input
                 type="password"
+                placeholder="Sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className={`w-full pl-9 pr-3 py-2 border rounded-lg text-xs outline-none ${
