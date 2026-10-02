@@ -1,14 +1,20 @@
 import React from 'react';
-import { LayoutDashboard, Sliders, FileSpreadsheet, GitBranch, ArrowLeft, Wrench } from 'lucide-react';
+import { LayoutDashboard, Sliders, FileSpreadsheet, GitBranch, ArrowLeft, Wrench, User, LogOut } from 'lucide-react';
 import { useFinancialStore } from '../store/financialStore';
 
 interface SidebarProps {
   activeScreen: number;
   onSelectScreen: (screenNumber: number) => void;
   isAuthenticated?: boolean;
+  onLogout?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onSelectScreen, isAuthenticated = true }) => {
+export const Sidebar: React.FC<SidebarProps> = ({
+  activeScreen,
+  onSelectScreen,
+  isAuthenticated = true,
+  onLogout,
+}) => {
   const { themeMode } = useFinancialStore();
   const isDark = themeMode === 'dark';
 
@@ -17,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onSelectScreen, 
     return null;
   }
 
-  const isToolsSection = activeScreen >= 4;
+  const isToolsSection = activeScreen >= 4 && activeScreen <= 6;
 
   const toolsMenuItems = [
     { id: 4, label: 'Classificação & Canvas', icon: Sliders },
@@ -25,9 +31,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onSelectScreen, 
     { id: 6, label: 'Gestor de Cenários', icon: GitBranch },
   ];
 
-  const dashboardMenuItems = [
+  const mainMenuItems = [
     { id: 3, label: 'Dashboard Principal', icon: LayoutDashboard },
     { id: 4, label: 'Ferramentas de Modelagem', icon: Wrench },
+    { id: 7, label: 'Configuração da Conta', icon: User },
   ];
 
   return (
@@ -78,14 +85,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onSelectScreen, 
                 </button>
               );
             })}
+
+            <div className="pt-2 border-t border-slate-200 dark:border-[#2D3945]">
+              <button
+                onClick={() => onSelectScreen(7)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold transition-all ${
+                  activeScreen === 7
+                    ? isDark ? 'bg-[#C87A54] text-white shadow-md font-bold' : 'bg-[#002D4A] text-white shadow-md font-bold'
+                    : isDark ? 'text-slate-300 hover:bg-[#202B36] hover:text-white' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                }`}
+              >
+                <User className={`w-4 h-4 ${activeScreen === 7 ? 'text-white' : isDark ? 'text-slate-400' : 'text-slate-500'}`} />
+                <span>Configuração da Conta</span>
+              </button>
+            </div>
           </nav>
         ) : (
-          /* Main Dashboard Sidebar (Screen 3) */
+          /* Main Dashboard & Account Sidebar (Screen 3 and Screen 7) */
           <nav className="space-y-1">
             <p className="px-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider mb-2">
-              Visão Geral
+              Menu da Plataforma
             </p>
-            {dashboardMenuItems.map((item) => {
+            {mainMenuItems.map((item) => {
               const Icon = item.icon;
               const isActive = activeScreen === item.id;
               return (
@@ -107,13 +128,27 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeScreen, onSelectScreen, 
         )}
       </div>
 
-      <div className={`p-3 rounded-xl border text-[11px] ${
-        isDark ? 'bg-[#202B36] border-[#2D3945] text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
-      }`}>
-        <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Model Results v1.0</p>
-        <p className="mt-1">
-          {isAuthenticated ? 'Sessão Ativa: Autenticado' : 'Acesso Restrito: Faça Login'}
-        </p>
+      <div className="space-y-3">
+        {onLogout && (
+          <button
+            onClick={onLogout}
+            className={`w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all text-red-500 border ${
+              isDark ? 'bg-red-500/10 border-red-500/30 hover:bg-red-500/20' : 'bg-red-50 border-red-200 hover:bg-red-100'
+            }`}
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            <span>Sair da Conta</span>
+          </button>
+        )}
+
+        <div className={`p-3 rounded-xl border text-[11px] ${
+          isDark ? 'bg-[#202B36] border-[#2D3945] text-slate-400' : 'bg-slate-50 border-slate-200 text-slate-500'
+        }`}>
+          <p className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>Model Results v1.0</p>
+          <p className="mt-1">
+            {isAuthenticated ? 'Sessão Ativa: Autenticado' : 'Acesso Restrito: Faça Login'}
+          </p>
+        </div>
       </div>
     </aside>
   );

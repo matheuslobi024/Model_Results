@@ -7,11 +7,14 @@ import { DashboardView } from './components/DashboardView';
 import { BusinessClassification } from './components/BusinessClassification';
 import { ProjectSpecifications } from './components/ProjectSpecifications';
 import { ScenarioManager } from './components/ScenarioManager';
+import { AccountSettings } from './components/AccountSettings';
 import { useFinancialStore } from './store/financialStore';
 
 export default function App() {
   const isDevMode = import.meta.env.DEV;
 
+  // In dev mode (npm run dev), authenticated by default & opens directly on Screen 3 (Dashboard)
+  // In user / prod mode (npm start / npm run build & preview), requires login & opens on Screen 1 (Landing Page)
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(isDevMode);
   const [activeScreen, setActiveScreen] = useState<number>(isDevMode ? 3 : 1);
 
@@ -35,8 +38,14 @@ export default function App() {
     setActiveScreen(3);
   };
 
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setActiveScreen(2);
+  };
+
   const isDark = themeMode === 'dark';
   const showSidebar = activeScreen !== 1 && activeScreen !== 2;
+  const userIsAuth = isAuthenticated || isDevMode;
 
   return (
     <div className={`min-h-screen flex flex-col font-sans ${isDark ? 'bg-[#182129] text-white' : 'bg-slate-50 text-slate-900'}`}>
@@ -44,6 +53,8 @@ export default function App() {
         projectName="Distribuidora Aurora"
         activeScenarioName={currentScenarioName}
         onExportPdf={handleExportPdf}
+        onLogout={userIsAuth ? handleLogout : undefined}
+        isAuthenticated={userIsAuth}
       />
 
       <div className="flex flex-1">
@@ -51,7 +62,8 @@ export default function App() {
           <Sidebar
             activeScreen={activeScreen}
             onSelectScreen={handleSelectScreen}
-            isAuthenticated={isAuthenticated || isDevMode}
+            isAuthenticated={userIsAuth}
+            onLogout={userIsAuth ? handleLogout : undefined}
           />
         )}
 
@@ -59,7 +71,7 @@ export default function App() {
           {activeScreen === 1 && (
             <LandingPage
               onStartClick={() => {
-                if (isAuthenticated || isDevMode) {
+                if (userIsAuth) {
                   setActiveScreen(3);
                 } else {
                   setActiveScreen(2);
@@ -70,10 +82,11 @@ export default function App() {
           {activeScreen === 2 && (
             <AuthScreen onLoginSuccess={handleLoginSuccess} />
           )}
-          {activeScreen === 3 && (isAuthenticated || isDevMode ? <DashboardView /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
-          {activeScreen === 4 && (isAuthenticated || isDevMode ? <BusinessClassification /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
-          {activeScreen === 5 && (isAuthenticated || isDevMode ? <ProjectSpecifications /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
-          {activeScreen === 6 && (isAuthenticated || isDevMode ? <ScenarioManager /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
+          {activeScreen === 3 && (userIsAuth ? <DashboardView /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
+          {activeScreen === 4 && (userIsAuth ? <BusinessClassification /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
+          {activeScreen === 5 && (userIsAuth ? <ProjectSpecifications /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
+          {activeScreen === 6 && (userIsAuth ? <ScenarioManager /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
+          {activeScreen === 7 && (userIsAuth ? <AccountSettings onLogout={handleLogout} /> : <AuthScreen onLoginSuccess={handleLoginSuccess} />)}
         </main>
       </div>
     </div>

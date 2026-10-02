@@ -1,17 +1,21 @@
 import React from 'react';
-import { Download, Layers, Sun, Moon } from 'lucide-react';
+import { Download, Layers, Sun, Moon, LogOut } from 'lucide-react';
 import { useFinancialStore } from '../store/financialStore';
 
 interface HeaderProps {
   projectName?: string;
   activeScenarioName?: string;
   onExportPdf?: () => void;
+  onLogout?: () => void;
+  isAuthenticated?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   projectName = "Distribuidora Aurora",
   activeScenarioName = "Base",
   onExportPdf,
+  onLogout,
+  isAuthenticated = false,
 }) => {
   const { themeMode, toggleTheme } = useFinancialStore();
   const isDark = themeMode === 'dark';
@@ -59,6 +63,18 @@ export const Header: React.FC<HeaderProps> = ({
             <Download className="w-4 h-4" />
             <span>Exportar PDF</span>
           </button>
+
+          {isAuthenticated && onLogout && (
+            <button
+              onClick={onLogout}
+              className={`p-2 rounded-lg transition-all border text-red-500 ${
+                isDark ? 'bg-red-500/10 hover:bg-red-500/20 border-red-500/30' : 'bg-red-50 hover:bg-red-100 border-red-200'
+              }`}
+              title="Sair da Conta"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          )}
         </div>
       </div>
     </header>
