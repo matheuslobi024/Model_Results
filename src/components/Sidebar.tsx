@@ -38,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <aside className={`w-64 min-h-[calc(100vh-4rem)] p-4 border-r flex flex-col justify-between ${
+    <aside className={`w-64 h-[calc(100vh-4rem)] sticky top-16 flex-shrink-0 p-4 border-r flex flex-col justify-between overflow-y-auto ${
       isDark ? 'bg-[#182129] text-white border-[#2D3945]' : 'bg-white text-slate-900 border-slate-200'
     }`}>
       <div className="space-y-4">
@@ -51,7 +51,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {isToolsSection ? (
-          /* Dedicated Sidebar for the last 3 pages (Screens 4, 5, 6 - Modeling & Configuration Tools) */
+          /* Dedicated Sidebar for Modeling & Configuration Tools (Screens 4, 5, 6) */
           <nav className="space-y-1">
             <button
               onClick={() => onSelectScreen(3)}
@@ -81,7 +81,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   }`}
                 >
                   <Icon className={`w-4 h-4 ${isActive ? 'text-white' : isDark ? 'text-slate-400' : 'text-slate-500'}`} />
-                  <span>Tela {item.id}: {item.label}</span>
+                  <span>{item.label}</span>
                 </button>
               );
             })}
@@ -128,7 +128,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 pt-4">
         {onLogout && (
           <button
             onClick={onLogout}
